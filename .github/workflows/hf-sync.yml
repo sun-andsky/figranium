@@ -27,8 +27,8 @@ jobs:
           from huggingface_hub import HfApi
           import os
 
-          # 1. Modify the root README purely in the runner's temporary memory
-          header = '---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n'
+          # Changed colorFrom to 'gray' to satisfy the platform validator rules
+          header = '---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: gray\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n'
           
           if os.path.exists('README.md'):
               with open('README.md', 'r+') as f:
@@ -39,7 +39,6 @@ jobs:
               with open('README.md', 'w') as f:
                   f.write(header)
 
-          # 2. Upload the folder via API
           api = HfApi(token=os.environ['HF_TOKEN'])
           print('Uploading pristine directory with injected root README...')
           api.upload_folder(
