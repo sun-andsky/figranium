@@ -5,40 +5,17 @@ on:
     branches: [main, dev]
 
 jobs:
-  sync:
+  sync-to-hub:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          fetch-depth: 0
+          lfs: true
 
-      - name: Install Hugging Face CLI
-        run: pip install huggingface_hub
-
-      - name: Inject Configuration Header
-        run: |
-          if [ -f README.md ]; then
-            echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n$(cat README.md)" > README.md
-          else
-            echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---" > README.md
-          fi
-
-      - name: Upload to Spaces via API
+      - name: Push to Hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          python -c "
-          from huggingface_hub import HfApi
-          import os
-          api = HfApi(token=os.environ['HF_TOKEN'])
-          api.upload_folder(
-              folder_path='.',
-              repo_id='asermnasr/figranium-testing',
-              repo_type='space',
-              ignore_patterns=['.git/*', '.github/*']
-          )
-          "
+          git push --force https://asermnasr:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing HEAD:main
