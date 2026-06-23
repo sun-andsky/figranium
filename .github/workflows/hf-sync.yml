@@ -10,32 +10,31 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Build and Push Isolated Directory
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      - name: Inject and Commit Header Locally
         run: |
-          # 1. Create a completely isolated deployment directory
-          mkdir ../deploy_dir
-          cp -r . ../deploy_dir
-          cd ../deploy_dir
+          # 1. Configure a temporary local identity
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
           
-          # 2. Clean out the existing GitHub git history so it's a fresh slate
-          rm -rf .git
-          
-          # 3. Inject the required metadata header into the temporary README
+          # 2. Inject the header metadata
           if [ -f README.md ]; then
             echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n$(cat README.md)" > README.md
           else
             echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---" > README.md
           fi
           
-          # 4. Initialize a pristine local Git repo in the isolated folder
-          git init -b main
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-          
-          # 5. Stage, commit, and force-push the clean environment
-          git add .
-          git commit -m "Deploy to Hugging Face Spaces"
-          git push --force https://oauth2:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing main
+          # 3. Commit locally so the working directory is completely clean
+          git add README.md
+          git commit -m "Prep README for Hugging Face"
+
+      - name: Sync to Hugging Face
+        uses: huggingface/hub-sync@v0.1.0
+        with:
+          github_repo_id: ${{ github.repository }}
+          huggingface_repo_id: asermnasr/figranium-testing
+          hf_token: ${{ secrets.HF_TOKEN }}
+          repo_type: space
+          space_sdk: docker
