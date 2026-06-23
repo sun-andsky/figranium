@@ -15,8 +15,9 @@ jobs:
           lfs: true
 
       - name: Push to Hugging Face
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          git remote add hf https://asermnasr:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing
-          git push --force hf HEAD:main
+        uses: espadrine/huggingface-spaces-sync-action@v1.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          huggingface_token: ${{ secrets.HF_TOKEN }}
+          huggingface_repo: asermnasr/figranium-testing
+          huggingface_branch: main
