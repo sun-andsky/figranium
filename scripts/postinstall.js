@@ -8,6 +8,16 @@ if (process.env.DOPPELGANGER_SKIP_PLAYWRIGHT_INSTALL === '1') {
   process.exit(0);
 }
 
+if (process.env.VERCEL === '1') {
+  console.log('[postinstall] Skipping Playwright install (VERCEL=1).');
+  process.exit(0);
+}
+
+if (process.env.CI === '1') {
+  console.log('[postinstall] Skipping Playwright install (CI=1).');
+  process.exit(0);
+}
+
 if (process.env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD === '1') {
   console.log('[postinstall] Skipping Playwright download (PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1).');
   process.exit(0);
