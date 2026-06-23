@@ -17,20 +17,18 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # 1. Configure local git user settings inside the runner
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           
-          # 2. Inject the required metadata header into the README
           if [ -f README.md ]; then
             echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n$(cat README.md)" > README.md
           else
             echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---" > README.md
           fi
           
-          # 3. Commit the change inside the runner's isolated environment
           git add README.md
-          git commit -m "Inject Hugging Face metadata header"
+          # The --allow-empty flag prevents git from crashing if nothing changed
+          git commit --allow-empty -m "Inject Hugging Face metadata header"
           
-          # 4. Force push the HEAD commit directly to the HF Space
-          git push --force https://asermnasr:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing HEAD:main
+          # Force push using the proper HF OAuth format
+          git push --force https://oauth2:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing HEAD:main
