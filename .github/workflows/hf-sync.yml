@@ -2,7 +2,7 @@ name: Sync to Hugging Face Hub
 
 on:
   push:
-    branches: [main, beta] # Triggers on changes to either branch
+    branches: [main, beta]
 
 jobs:
   sync:
@@ -10,12 +10,31 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetches full history so git push works cleanly
 
-      - name: Push Directly to Spaces Main
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Hugging Face Hub
+        run: pip install huggingface_hub
+
+      - name: Upload via API
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Use the GITHUB_REF_NAME to push the current branch (main or beta) straight to HF's main branch
-          git push --force https://oauth2:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing $GITHUB_REF_NAME:main
+          python -c "
+          from huggingface_hub import HfApi
+          import os
+          
+          api = HfApi(token=os.environ['HF_TOKEN'])
+          
+          print('Starting API folder upload...')
+          api.upload_folder(
+              folder_path='.',
+              repo_id='asermnasr/figranium-testing',
+              repo_type='space',
+              ignore_patterns=['.git/*', '.github/*']
+          )
+          print('Upload complete!')
+          "
