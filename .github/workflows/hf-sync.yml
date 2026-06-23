@@ -2,7 +2,7 @@ name: Sync to Hugging Face Spaces
 
 on:
   push:
-    branches: [main] # Triggers on updates to main or dev branches
+    branches: [main, dev]
 
 jobs:
   deploy:
@@ -19,4 +19,4 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git remote add hf https://asermnasr:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing
-          git push --force hf main
+          git push --force hf HEAD:main
