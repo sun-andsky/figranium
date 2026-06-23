@@ -27,8 +27,8 @@ jobs:
           from huggingface_hub import HfApi
           import os
 
-          # Changed colorFrom to 'gray' to satisfy the platform validator rules
-          header = '---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: gray\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n'
+          # Injected app_port tells Hugging Face exactly where to route public web traffic
+          header = '---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: gray\ncolorTo: gray\nsdk: docker\napp_port: 11345\npinned: false\n---\n\n'
           
           if os.path.exists('README.md'):
               with open('README.md', 'r+') as f:
@@ -40,7 +40,7 @@ jobs:
                   f.write(header)
 
           api = HfApi(token=os.environ['HF_TOKEN'])
-          print('Uploading pristine directory with injected root README...')
+          print('Uploading directory with correct port mapping configurations...')
           api.upload_folder(
               folder_path='.',
               repo_id='asermnasr/figranium-testing',
