@@ -19,22 +19,34 @@ jobs:
       - name: Install Hugging Face Hub
         run: pip install huggingface_hub
 
-      - name: Upload via API
+      - name: Prepend Header and Upload
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           python -c "
           from huggingface_hub import HfApi
           import os
+
+          # 1. Modify the root README purely in the runner's temporary memory
+          header = '---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n'
           
+          if os.path.exists('README.md'):
+              with open('README.md', 'r+') as f:
+                  content = f.read()
+                  f.seek(0, 0)
+                  f.write(header + content)
+          else:
+              with open('README.md', 'w') as f:
+                  f.write(header)
+
+          # 2. Upload the folder via API
           api = HfApi(token=os.environ['HF_TOKEN'])
-          
-          print('Starting API folder upload...')
+          print('Uploading pristine directory with injected root README...')
           api.upload_folder(
               folder_path='.',
               repo_id='asermnasr/figranium-testing',
               repo_type='space',
               ignore_patterns=['.git/*', '.github/*']
           )
-          print('Upload complete!')
+          print('Upload successful!')
           "
