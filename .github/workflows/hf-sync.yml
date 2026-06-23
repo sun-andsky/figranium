@@ -2,20 +2,20 @@ name: Sync to Hugging Face Hub
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, beta] # Triggers on changes to either branch
 
 jobs:
-  sync-to-hub:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          lfs: true
+          fetch-depth: 0 # Fetches full history so git push works cleanly
 
-      - name: Push to Hub
+      - name: Push Directly to Spaces Main
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git push --force https://asermnasr:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing HEAD:main
+          # Use the GITHUB_REF_NAME to push the current branch (main or beta) straight to HF's main branch
+          git push --force https://oauth2:$HF_TOKEN@huggingface.co/spaces/asermnasr/figranium-testing $GITHUB_REF_NAME:main
