@@ -11,22 +11,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
+          ref: main # Forces GitHub to check out a real branch instead of a detached HEAD
           fetch-depth: 0
 
       - name: Inject and Commit Header Locally
         run: |
-          # 1. Configure a temporary local identity
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           
-          # 2. Inject the header metadata
           if [ -f README.md ]; then
             echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n$(cat README.md)" > README.md
           else
             echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---" > README.md
           fi
           
-          # 3. Commit locally so the working directory is completely clean
           git add README.md
           git commit -m "Prep README for Hugging Face"
 
