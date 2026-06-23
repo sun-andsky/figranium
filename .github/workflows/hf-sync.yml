@@ -11,6 +11,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Inject Hugging Face Header
+        run: |
+          if [ -f README.md ]; then
+            echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---\n\n$(cat README.md)" > README.md
+          else
+            echo -e "---\ntitle: Figranium Testing\nemoji: 🧪\ncolorFrom: white\ncolorTo: gray\nsdk: docker\npinned: false\n---" > README.md
+          fi
+
       - name: Sync to Hugging Face
         uses: huggingface/hub-sync@v0.1.0
         with:
