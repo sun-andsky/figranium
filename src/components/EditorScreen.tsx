@@ -25,6 +25,8 @@ interface EditorScreenProps {
     tasks?: Task[];
     editorView: ViewMode;
     setEditorView: (view: ViewMode) => void;
+    triggerExpanded: boolean;
+    setTriggerExpanded: Dispatch<SetStateAction<boolean>>;
     isExecuting: boolean;
     onSave: (task?: Task, createVersion?: boolean) => Promise<void>;
     onRun: () => void;
@@ -47,6 +49,8 @@ const EditorScreen: React.FC<EditorScreenProps> = ({
     currentTask,
     setCurrentTask,
     tasks = [],
+    triggerExpanded,
+    setTriggerExpanded,
     isExecuting,
     onSave,
     onRun,
@@ -88,7 +92,6 @@ const EditorScreen: React.FC<EditorScreenProps> = ({
     const [actionPaletteInsertIndex, setActionPaletteInsertIndex] = useState<number | null>(null);
     const [actionStatusById, setActionStatusById] = useState<Record<string, 'running' | 'success' | 'error' | 'skipped'>>({});
     const [isResultsOpen, setIsResultsOpen] = useState(false);
-    const [triggerExpanded, setTriggerExpanded] = useState(false);
     const [selectedNoteIds, setSelectedNoteIds] = useState<Set<string>>(new Set());
 
     useEffect(() => {

@@ -72,6 +72,7 @@ export default function App() {
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const lastSavedSnapshot = useRef('');
     const [editorView, setEditorView] = useState<ViewMode>('visual');
+    const [triggerExpanded, setTriggerExpanded] = useState(false);
     const [pinnedResultsByTask, setPinnedResultsByTask] = useState<Record<string, Results>>({});
 
     const pinnedResultsKey = 'doppelganger.pinnedResults';
@@ -179,10 +180,12 @@ export default function App() {
     }, [navigate]);
 
     const handleNewTask = useCallback(() => {
+        setTriggerExpanded(false);
         createNewTask(setResults, setHasUnsavedChanges);
     }, [createNewTask, setResults, setHasUnsavedChanges]);
 
     const handleEditTask = useCallback((task: Task) => {
+        setTriggerExpanded(false);
         editTask(task, markTaskAsSaved, setResults);
     }, [editTask, markTaskAsSaved, setResults]);
 
@@ -268,6 +271,8 @@ export default function App() {
                                 tasks={tasks}
                                 editorView={editorView}
                                 setEditorView={setEditorView}
+                                triggerExpanded={triggerExpanded}
+                                setTriggerExpanded={setTriggerExpanded}
                                 isExecuting={isExecuting}
                                 onSave={handleSaveTask}
                                 onRun={() => runTaskWithSnapshot(currentTask, currentTask, setCurrentTask)}
@@ -298,6 +303,8 @@ export default function App() {
                                 setCurrentTask={setCurrentTask}
                                 editorView={editorView}
                                 setEditorView={setEditorView}
+                                triggerExpanded={triggerExpanded}
+                                setTriggerExpanded={setTriggerExpanded}
                                 isExecuting={isExecuting}
                                 onSave={handleSaveTask}
                                 onRun={() => runTaskWithSnapshot(currentTask, currentTask, setCurrentTask)}
