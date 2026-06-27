@@ -13,6 +13,8 @@ interface EditorLoaderProps {
     setCurrentTask: Dispatch<SetStateAction<Task | null>>;
     editorView: any;
     setEditorView: any;
+    triggerExpanded: boolean;
+    setTriggerExpanded: Dispatch<SetStateAction<boolean>>;
     isExecuting: boolean;
     onSave: (task?: Task, createVersion?: boolean) => Promise<void>;
     onRun: () => void;
